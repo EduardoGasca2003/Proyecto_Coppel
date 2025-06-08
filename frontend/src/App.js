@@ -1,5 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
+import React from 'react';
+import axios from 'axios';
+import Prueba from './pruebaAPI.jsx';
 
 function App() {
   return (
@@ -17,9 +20,13 @@ function App() {
         >
           Learn React
         </a>
+        <h1>Frontend React</h1>
+      <Prueba />
       </header>
     </div>
   );
 }
+
+
 
 export default App;
