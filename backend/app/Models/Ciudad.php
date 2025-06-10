@@ -10,6 +10,7 @@ class Ciudad extends Model
 {
     use HasFactory;
 
+    protected $table = 'ciudades'; // nombre de la tabla en la base de datos pa que el laravel no se aloque
     protected $fillable = ['nombre']; // permite asignación masiva de este campo
 
     // Una ciudad puede tener muchas rutas

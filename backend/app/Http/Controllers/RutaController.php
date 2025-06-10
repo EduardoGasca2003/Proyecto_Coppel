@@ -32,8 +32,49 @@ class RutaController extends Controller
         return response()->json($ruta, 201);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return Ruta::with('ciudad', 'chofer')->get();
+        $query = \App\Models\Ruta::with(['ciudad', 'chofer']);
+
+        // Filtro por ciudad si viene en la request
+        if ($request->has('ciudad_id')) {
+            $query->where('ciudad_id', $request->input('ciudad_id'));
+        }
+
+        // Filtro por nombre de ruta si viene en la request
+        if ($request->has('nombre_ruta')) {
+            $query->where('nombre_ruta', 'LIKE', '%' . $request->input('nombre_ruta') . '%');
+        }
+
+        $rutas = $query->get();
+
+        return response()->json($rutas);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $ruta = Ruta::findOrFail($id);
+
+        $request->validate([
+            'chofer_id' => 'required|exists:choferes,id',
+            'tipo_servicio' => 'required|string',
+            'capacidad' => 'required|integer|min:1',
+        ]);
+
+        $ruta->update([
+            'chofer_id' => $request->chofer_id,
+            'tipo_servicio' => $request->tipo_servicio,
+            'capacidad' => $request->capacidad,
+        ]);
+
+        return response()->json(['message' => 'Ruta actualizada correctamente', 'ruta' => $ruta]);
+    }
+
+    public function destroy($id)
+    {
+        $ruta = Ruta::findOrFail($id);
+        $ruta->delete();
+
+        return response()->json(['message' => 'Ruta eliminada correctamente']);
     }
 }

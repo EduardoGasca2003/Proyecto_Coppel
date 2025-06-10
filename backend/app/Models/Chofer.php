@@ -9,6 +9,8 @@ class Chofer extends Model
 {
     use HasFactory;
 
+    protected $table = 'choferes'; // nombre de la tabla en la base de datos pa que el laravel no se aloque tambien
+
     protected $fillable = [
         'ciudad_id',
         'nombre',

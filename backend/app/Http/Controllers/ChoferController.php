@@ -19,7 +19,7 @@ class ChoferController extends Controller
             return response()->json(['mensaje' => 'No hay choferes disponibles.'], 404);
         }
 
-        return $choferes;
+        return response()->json($choferes);
     }
 
     // Registrar chofer
@@ -40,5 +40,34 @@ class ChoferController extends Controller
         ));
 
         return response()->json($chofer, 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $chofer = Chofer::findOrFail($id);
+
+        $request->validate([
+            'sueldo' => 'required|numeric|min:0',
+            'activo' => 'required|boolean',
+        ]);
+
+        $chofer->update([
+            'sueldo' => $request->sueldo,
+            'activo' => $request->activo,
+        ]);
+
+        return response()->json([
+            'mensaje' => 'Chofer actualizado correctamente.',
+            'chofer' => $chofer
+        ]);
+    }
+
+    // DELETE: Eliminar chofer
+    public function destroy($id)
+    {
+        $chofer = Chofer::findOrFail($id);
+        $chofer->delete();
+
+        return response()->json(['mensaje' => 'Chofer eliminado correctamente.']);
     }
 }
