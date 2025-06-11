@@ -54,6 +54,14 @@ class RutaController extends Controller
     public function update(Request $request, $id)
     {
         $ruta = Ruta::findOrFail($id);
+        $ruta->nombre_ruta = $request->nombre_ruta;
+        $ruta->tipo_servicio = $request->tipo_servicio;
+        $ruta->capacidad = $request->capacidad;
+        $ruta->chofer_id = $request->chofer_id;
+
+        $ruta->save();
+
+
 
         $request->validate([
             'chofer_id' => 'required|exists:choferes,id',

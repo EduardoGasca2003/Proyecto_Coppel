@@ -2,12 +2,49 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Button, Table, Pagination } from 'react-bootstrap';
 import ModalCrearRuta from './ModalCrearRuta';
+import ModalEditarRuta from './ModalEditarRuta';
+import ModalConfirmarEliminar from './ModalConfirmarEliminar';
+
 
 const Rutas = () => {
-  const [rutas, setRutas] = useState([]);
-  const [ciudades, setCiudades] = useState([]);
-  const [paginaActual, setPaginaActual] = useState(1);
-  const rutasPorPagina = 5;
+    const [rutas, setRutas] = useState([]);
+    const [ciudades, setCiudades] = useState([]);
+    const [paginaActual, setPaginaActual] = useState(1);
+    const rutasPorPagina = 5;
+
+    const [modalEditarVisible, setModalEditarVisible] = useState(false);
+    const [rutaSeleccionada, setRutaSeleccionada] = useState(null);
+
+    const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
+
+
+    const abrirModalEditar = (ruta) => {
+        setRutaSeleccionada(ruta);
+        setModalEditarVisible(true);
+        };
+
+        const cerrarModalEditar = () => {
+        setModalEditarVisible(false);
+        setRutaSeleccionada(null);
+        };
+
+        const abrirModalEliminar = (ruta) => {
+        setRutaSeleccionada(ruta);
+        setMostrarModalEliminar(true);
+        };
+
+        const cerrarModalEliminar = () => {
+        setMostrarModalEliminar(false);
+        setRutaSeleccionada(null);
+        };
+
+
+        const rutaActualizada = (rutaActualizada) => {
+        setRutas(prev =>
+            prev.map(r => (r.id === rutaActualizada.id ? { ...r, ...rutaActualizada } : r))
+        );
+    };
+
 
   useEffect(() => {
     obtenerCiudades();
@@ -27,8 +64,17 @@ const Rutas = () => {
     setRutas([nuevaRuta, ...rutas]);
     };
 
+    const confirmarEliminar = async () => {
+        if (!rutaSeleccionada) return;
 
-
+        try {
+            await axios.delete(`http://localhost:8000/api/rutas/${rutaSeleccionada.id}`);
+            setRutas(rutas.filter(r => r.id !== rutaSeleccionada.id));
+            cerrarModalEliminar();
+        } catch (error) {
+            console.error('Error al eliminar ruta:', error);
+        }
+    };
 
   const obtenerCiudades = async () => {
     try {
@@ -95,8 +141,8 @@ const Rutas = () => {
               <td>{ruta.tipo_servicio === '1' ? 'Personal' : 'Artículos'}</td>
               <td>{ruta.capacidad}</td>
               <td>
-                <Button variant="warning" size="sm" className="me-2">Editar</Button>
-                <Button variant="danger" size="sm">Eliminar</Button>
+                <Button variant="warning" size="sm" className="me-2" onClick={() => abrirModalEditar(ruta)}>Editar</Button>
+                <Button variant="danger" size="sm" onClick={() => abrirModalEliminar(ruta)}>Eliminar</Button>
               </td>
             </tr>
           ))}
@@ -116,6 +162,20 @@ const Rutas = () => {
       </Pagination>
       
       <ModalCrearRuta show={mostrarModal} handleClose={cerrarModal} onRutaCreada={rutaCreada} />
+
+        <ModalEditarRuta
+            show={modalEditarVisible}
+            handleClose={cerrarModalEditar}
+            ruta={rutaSeleccionada}
+            onRutaActualizada={rutaActualizada}
+        />
+
+        <ModalConfirmarEliminar
+            show={mostrarModalEliminar}
+            handleClose={cerrarModalEliminar}
+            handleConfirm={confirmarEliminar}
+            nombreRuta={rutaSeleccionada?.nombre_ruta || ''}
+        />
 
     </div>
   );
