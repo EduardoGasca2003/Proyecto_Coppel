@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Button, Table, Pagination } from 'react-bootstrap';
+import ModalCrearRuta from './ModalCrearRuta';
 
 const Rutas = () => {
   const [rutas, setRutas] = useState([]);
@@ -17,6 +18,17 @@ const Rutas = () => {
       obtenerRutas();
     }
   }, [ciudades]);
+
+    const [mostrarModal, setMostrarModal] = useState(false);
+    const abrirModal = () => setMostrarModal(true);
+    const cerrarModal = () => setMostrarModal(false);
+
+    const rutaCreada = (nuevaRuta) => {
+    setRutas([nuevaRuta, ...rutas]);
+    };
+
+
+
 
   const obtenerCiudades = async () => {
     try {
@@ -51,7 +63,7 @@ const Rutas = () => {
   if (ciudades.length === 0) {
     return (
       <div className="container mt-4">
-        <h4>No hay ciudades registradas</h4>
+        <h4>No hay ciudades registradas. De clic en el boton para crear una nueva ciudad.</h4>
         <Button variant="primary">+ Nueva Ciudad</Button>
       </div>
     );
@@ -61,7 +73,7 @@ const Rutas = () => {
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3>Listado de Rutas</h3>
-        <Button variant="success">+ Nueva Ruta</Button>
+        <Button variant="success" onClick={abrirModal}>+ Nueva Ruta</Button>
       </div>
       <Table striped bordered hover>
         <thead>
@@ -102,8 +114,12 @@ const Rutas = () => {
           </Pagination.Item>
         ))}
       </Pagination>
+      
+      <ModalCrearRuta show={mostrarModal} handleClose={cerrarModal} onRutaCreada={rutaCreada} />
+
     </div>
   );
+  
 };
 
 export default Rutas;
