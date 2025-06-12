@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 
-const ModalEditarChofer = ({ show, handleClose, chofer, onChoferActualizado }) => {
+const ModalEditarChofer = ({ show, handleClose, chofer, onChoferActualizada }) => {
   const [formData, setFormData] = useState({ ...chofer });
   const [errores, setErrores] = useState({});
 
@@ -33,14 +33,20 @@ const ModalEditarChofer = ({ show, handleClose, chofer, onChoferActualizado }) =
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const datosEditados = {
+    const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData(prev => ({ ...prev, [name]: value }));
+};
+
+    try {
+      const datosEditados = {
       fecha_nacimiento: formData.fecha_nacimiento,
       sueldo: formData.sueldo
     };
 
-    try {
       const res = await axios.put(`http://localhost:8000/api/choferes/${formData.id}`, datosEditados);
-      onChoferActualizado(res.data);
+      onChoferActualizada(res.data);
+      console.log('Chofer editado exitosamente:', res.data);
       handleClose();
       window.location.reload();
     } catch (error) {
@@ -56,6 +62,51 @@ const ModalEditarChofer = ({ show, handleClose, chofer, onChoferActualizado }) =
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-2">
+            <Form.Label>Nombre</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.nombre || ''}
+              disabled
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-2">
+            <Form.Label>Apellido Paterno</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.apellido_paterno || ''}
+              disabled
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-2">
+            <Form.Label>Apellido Materno</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.apellido_materno || ''}
+              disabled
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-2">
+            <Form.Label>Ciudad</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.ciudad || ''}
+              disabled
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-2">
+            <Form.Label>Ruta</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.ruta || ''}
+              disabled
+            />
+          </Form.Group>
+
           <Form.Group>
             <Form.Label>Fecha de nacimiento</Form.Label>
             <Form.Control

@@ -1,22 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Button, Table, Pagination } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import ModalCrearRuta from './ModalCrearRuta';
 import ModalEditarRuta from './ModalEditarRuta';
 import ModalConfirmarEliminar from './ModalConfirmarEliminar';
 
 
 const Rutas = () => {
+
     const [rutas, setRutas] = useState([]);
+    const [ciudadSeleccionada, setCiudadSeleccionada] = useState('');
+    const [filtroRuta, setFiltroRuta] = useState('');
+    const [rutaSeleccionada, setRutaSeleccionada] = useState(null);
+    
+    // Filtrar choferes según la ciudad, nombre y ruta
+    const rutasFiltrados = rutas.filter((c) => {
+        const coincideCiudad = ciudadSeleccionada === '' || c.ciudad_id === parseInt(ciudadSeleccionada);
+        const coincideRuta = (c.ruta ?? '').toLowerCase().includes(filtroRuta.toLowerCase());
+        return coincideCiudad && coincideRuta;
+    });
+
     const [ciudades, setCiudades] = useState([]);
     const [paginaActual, setPaginaActual] = useState(1);
     const rutasPorPagina = 5;
-
     const [modalEditarVisible, setModalEditarVisible] = useState(false);
-    const [rutaSeleccionada, setRutaSeleccionada] = useState(null);
-
     const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
-
+    
+    
 
     const abrirModalEditar = (ruta) => {
         setRutaSeleccionada(ruta);
@@ -56,6 +67,7 @@ const Rutas = () => {
     }
   }, [ciudades]);
 
+  
     const [mostrarModal, setMostrarModal] = useState(false);
     const abrirModal = () => setMostrarModal(true);
     const cerrarModal = () => setMostrarModal(false);
@@ -95,16 +107,19 @@ const Rutas = () => {
     }
   };
 
-  const rutasPaginadas = rutas.slice(
-    (paginaActual - 1) * rutasPorPagina,
-    paginaActual * rutasPorPagina
-  );
-
-  const totalPaginas = Math.ceil(rutas.length / rutasPorPagina);
-
-  const cambiarPagina = (numero) => {
-    setPaginaActual(numero);
-  };
+  // Configuracion de Paginación
+    const rutasPaginadas = rutasFiltrados.slice(
+      (paginaActual - 1) * rutasPorPagina,
+      paginaActual * rutasPorPagina
+      );
+  
+      const totalPaginas = Math.ceil(rutasFiltrados.length / rutasPorPagina);
+      const cambiarPagina = (numero) => {
+          setPaginaActual(numero);
+      };
+      useEffect(() => {
+          setPaginaActual(1);
+    }, [ciudadSeleccionada, filtroRuta]);
 
   if (ciudades.length === 0) {
     return (
@@ -121,9 +136,26 @@ const Rutas = () => {
         <h3>Listado de Rutas</h3>
         <Button variant="success" onClick={abrirModal}>+ Nueva Ruta</Button>
       </div>
+
+      <Form.Select value={ciudadSeleccionada} onChange={e => setCiudadSeleccionada(e.target.value)}>
+            <option value="">Todas las ciudades</option>
+            {ciudades.map(ciudad => (
+                <option key={ciudad.id} value={ciudad.id}>{ciudad.nombre}</option>
+            ))}
+        </Form.Select>
+
+        <Form.Control
+            type="text"
+            placeholder="Buscar por ruta"
+            value={filtroRuta}
+            onChange={e => setFiltroRuta(e.target.value)}
+            className="mt-2"
+        />
+
       <Table striped bordered hover>
         <thead>
           <tr>
+            <th>ID</th>
             <th>Nombre Ruta</th>
             <th>Ciudad</th>
             <th>Chofer</th>
@@ -135,6 +167,7 @@ const Rutas = () => {
         <tbody>
           {rutasPaginadas.map((ruta) => (
             <tr key={ruta.id}>
+              <td>{ruta.id}</td>
               <td>{ruta.nombre_ruta}</td>
               <td>{ruta.ciudad?.nombre}</td>
               <td>{ruta.chofer?.nombre} {ruta.chofer?.apellido_paterno}</td>

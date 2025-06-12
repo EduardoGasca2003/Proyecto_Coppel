@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('apellido_materno', 15);
             $table->date('fecha_nacimiento');
             $table->decimal('sueldo', 8, 2);
-            $table->boolean('activo')->default(true);
             $table->timestamps();
         });
     }

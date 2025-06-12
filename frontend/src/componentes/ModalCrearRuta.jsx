@@ -85,12 +85,15 @@ const ModalCrearRuta = ({ show, handleClose, onRutaCreada }) => {
     try {
       const res = await axios.post('http://localhost:8000/api/rutas', formData);
       onRutaCreada(res.data);
-      resetFormulario(); // Limpiar después de guardar
+      resetFormulario();
+      window.location.reload();
       handleClose();
     } catch (error) {
       console.error('Error al crear ruta:', error);
     }
   };
+
+  
 
   // Limpiar formulario
   const resetFormulario = () => {
@@ -110,7 +113,7 @@ const ModalCrearRuta = ({ show, handleClose, onRutaCreada }) => {
     setShowConfirmClose(true);
   };
 
-  // Confirmar que se quiere cerrar (sí limpia)
+  // Confirmar que se quiere cerrar
   const confirmarCerrar = () => {
     resetFormulario();
     setShowConfirmClose(false);
@@ -214,10 +217,14 @@ const ModalCrearRuta = ({ show, handleClose, onRutaCreada }) => {
                 {errores.capacidad}
               </Form.Control.Feedback>
             </Form.Group>
-
-            <Button type="submit" className="mt-3" variant="primary">
-              Guardar
-            </Button>
+                <Modal.Footer>
+                  <Button class="btn btn-primary" variant="secondary" onClick={handleIntentarCerrar}>
+                    Salir
+                  </Button>
+                  <Button class="btn btn-primary" variant="primary" type="submit" className="mt-3" >
+                    Crear Chofer
+                  </Button>
+              </Modal.Footer>
           </Form>
         </Modal.Body>
       </Modal>

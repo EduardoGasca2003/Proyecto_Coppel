@@ -5,7 +5,7 @@ import { Form } from 'react-bootstrap';
 import ModalCrearChofer from './ModalCrearChofer';
 import ModalEditarChofer from './ModalEditarChofer';
 import ModalConfirmarEliminarChofer from './ModalConfirmarEliminarChofer';
-
+import ModalCrearCiudad from './ModalCrearCiudad';
 
 const Choferes = () => {
     
@@ -17,8 +17,8 @@ const Choferes = () => {
     // Filtrar choferes según la ciudad, nombre y ruta
     const choferesFiltrados = choferes.filter((c) => {
         const coincideCiudad = ciudadSeleccionada === '' || c.ciudad_id === parseInt(ciudadSeleccionada);
-        const coincideNombre = c.nombre.toLowerCase().includes(filtroNombre.toLowerCase());
-        const coincideRuta = c.ruta.toLowerCase().includes(filtroRuta.toLowerCase());
+        const coincideNombre = (c.nombre ?? '').toLowerCase().includes(filtroNombre.toLowerCase());
+        const coincideRuta = (c.ruta ?? '').toLowerCase().includes(filtroRuta.toLowerCase());
         return coincideCiudad && coincideNombre && coincideRuta;
     });
 
@@ -32,6 +32,9 @@ const Choferes = () => {
     const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
     const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
 
+    const [mostrarModalCiudad, setMostrarModalCiudad] = useState(false);
+    const abrirModalCiudad = () => setMostrarModalCiudad(true);
+    const cerrarModalCiudad = () => setMostrarModalCiudad(false);
 
     const abrirModalEditar = (chofer) => {
         setChoferSeleccionada(chofer);
@@ -61,15 +64,11 @@ const Choferes = () => {
     };
 
 
-  useEffect(() => {
-    obtenerCiudades();
-  }, []);
+    useEffect(() => {
+      obtenerCiudades();
+    }, []);
 
-  useEffect(() => {
-    if (ciudades.length > 0) {
-      obtenerChoferes();
-    }
-  }, [ciudades]);
+    
 
     const [mostrarModal, setMostrarModal] = useState(false);
     const abrirModal = () => setMostrarModal(true);
@@ -91,32 +90,51 @@ const Choferes = () => {
         }
     };
 
-  const obtenerCiudades = async () => {
-    try {
-      const res = await axios.get('http://localhost:8000/api/ciudades');
-      console.log('Ciudades recibidas:', res.data);
-      setCiudades(res.data);
-    } catch (error) {
-      console.error('Error al obtener ciudades:', error);
-    }
-  };
+    const obtenerCiudades = async () => {
+      try {
+        const res = await axios.get('http://localhost:8000/api/ciudades');
+        console.log('Ciudades recibidas:', res.data);
+        setCiudades(res.data);
+      } catch (error) {
+        console.error('Error al obtener ciudades:', error);
+      }
+    };
 
-  const obtenerChoferes = async () => {
-    try {
-      const res = await axios.get('http://localhost:8000/api/choferes');
-      setChoferes(res.data);
-    } catch (error) {
-      console.error('Error al obtener choferes:', error);
-    }
-  };
+    const obtenerChoferes = async () => {
+      try {
+        const res = await axios.get('http://localhost:8000/api/choferes');
+        setChoferes(res.data);
+      } catch (error) {
+        console.error('Error al obtener choferes:', error);
+      }
+    };
 
-  const eliminarChofer = async (id) => {
+    useEffect(() => {
+      const cargarChoferes = async () => {
         try {
-            await axios.delete(`http://tu-api.com/choferes/${id}`);
-            obtenerChoferes();
+          const respuesta = await axios.get('http://localhost:8000/api/choferes');
+          const choferesConInfo = await Promise.all(
+            respuesta.data.map(async (chofer) => {
+              const resInfo = await axios.get(`http://localhost:8000/api/choferes/${chofer.id}/info`);
+              return { ...chofer, ciudad: resInfo.data.ciudad, ruta: resInfo.data.ruta };
+            })
+          );
+          setChoferes(choferesConInfo);
         } catch (error) {
-            console.error('Error al eliminar chofer:', error);
-        }
+          console.error('Error al cargar choferes:', error);
+      }
+    };
+
+  cargarChoferes();
+}, []);
+
+    const eliminarChofer = async (id) => {
+          try {
+              await axios.delete(`http://tu-api.com/choferes/${id}`);
+              obtenerChoferes();
+          } catch (error) {
+              console.error('Error al eliminar chofer:', error);
+          }
     };
 
     // Configuracion de Paginación
@@ -134,23 +152,24 @@ const Choferes = () => {
     }, [ciudadSeleccionada, filtroNombre, filtroRuta]);
 
 
-
-  if (ciudades.length === 0) {
-    return (
-      <div className="container mt-4">
-        <h4>No hay ciudades registradas. De clic en el boton para crear una nueva ciudad.</h4>
-        <Button variant="primary">+ Nueva Ciudad</Button>
-      </div>
-    );
-  }
-
+    // Condicuión para mostrar mensaje y boton para crear si no hay ciudades
+    if (ciudades.length === 0) {
+      return (
+        <div className="container mt-4">
+          <h4>No hay ciudades registradas. De clic en el boton para crear una nueva ciudad.</h4>
+          <Button variant="primary" onClick={abrirModalCiudad}>+ Nueva Ciudad</Button>
+        </div>
+      );
+    }
   return (
+
+
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3>Listado de Choferes</h3>
         <Button variant="success" onClick={abrirModal}>+ Nuevo Chofer</Button>
       </div>
-
+    
         <Form.Select value={ciudadSeleccionada} onChange={e => setCiudadSeleccionada(e.target.value)}>
             <option value="">Todas las ciudades</option>
             {ciudades.map(ciudad => (
@@ -194,8 +213,8 @@ const Choferes = () => {
                 <td>{chofer.id}</td>
                 <td>{chofer.nombre}</td>
                 <td>{chofer.apellido_paterno} {chofer.apellido_materno}</td>
-                <td>{chofer.ciudad?.nombre}</td>
-                <td>{chofer.ruta?.nombre_ruta || 'Sin ruta'}</td>
+                <td>{chofer.ciudad || ''}</td>
+                <td>{chofer.ruta || 'Sin ruta'}</td>
                 <td>{chofer.fecha_nacimiento}</td>
                 <td>${parseFloat(chofer.sueldo).toFixed(2)}</td>
                 <td>
@@ -234,7 +253,14 @@ const Choferes = () => {
             handleConfirm={confirmarEliminar}
             nombreChofer={choferSeleccionada?.nombre_chofer || ''}
         />
+          
 
+        <ModalCrearCiudad
+          show={mostrarModalCiudad}
+          handleClose={() => setMostrarModalCiudad(false)}
+          onCiudadCreada={() => window.location.reload()} 
+        />
+        
     </div>
   );
   

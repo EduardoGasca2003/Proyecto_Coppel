@@ -17,8 +17,8 @@ class Chofer extends Model
         'apellido_paterno',
         'apellido_materno',
         'fecha_nacimiento',
-        'sueldo',
-        'activo'
+        'sueldo'
+
     ];
 
     // Un chofer pertenece a una ciudad
@@ -30,6 +30,6 @@ class Chofer extends Model
     // Un chofer puede tener una ruta asignada
     public function ruta()
     {
-        return $this->hasOne(Ruta::class);
+        return $this->belongsTo(Ruta::class);
     }
 }

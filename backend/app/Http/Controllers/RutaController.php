@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ruta;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class RutaController extends Controller
 {
@@ -84,5 +85,32 @@ class RutaController extends Controller
         $ruta->delete();
 
         return response()->json(['message' => 'Ruta eliminada correctamente']);
+    }
+
+    public function obtenerRutaYCiudad($id)
+    {
+        try {
+            $ruta = DB::table('rutas')
+                ->join('ciudades', 'rutas.ciudad_id', '=', 'ciudades.id')
+                ->select(
+                    'rutas.id',
+                    'rutas.nombre_ruta',
+                    'rutas.tipo_servicio',
+                    'rutas.capacidad',
+                    'rutas.chofer_id',
+                    'rutas.ciudad_id',
+                    'ciudades.nombre as ciudad'
+                )
+                ->where('rutas.id', $id)
+                ->first();
+
+            if (!$ruta) {
+                return response()->json(['message' => 'Ruta no encontrada'], 404);
+            }
+
+            return response()->json($ruta);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener la ruta: ' . $e->getMessage()], 500);
+        }
     }
 }

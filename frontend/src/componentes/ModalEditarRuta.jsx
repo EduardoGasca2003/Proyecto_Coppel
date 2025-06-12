@@ -5,21 +5,33 @@ import axios from 'axios';
 const ModalEditarRuta = ({ show, handleClose, ruta, onRutaActualizada }) => {
   const [formData, setFormData] = useState({ ...ruta });
   const [errores, setErrores] = useState({});
+  const [choferes, setChoferes] = useState([]);
 
   useEffect(() => {
     if (ruta) {
+      console.log('Datos de ruta recibidos:', ruta);
       setFormData({ ...ruta });
+      if (ruta.ciudad_id) {
+        obtenerChoferesPorCiudad(ruta.ciudad_id);
+      }
     }
   }, [ruta]);
+
+  const obtenerChoferesPorCiudad = async (ciudad_id) => {
+    try {
+      const res = await axios.get(`http://localhost:8000/api/choferes`);
+      const filtrados = res.data.filter(c => c.ciudad_id === ciudad_id);
+      setChoferes(filtrados);
+    } catch (error) {
+      console.error('Error al obtener choferes:', error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
 
-    // Validaciones inmediatas
-    if (name === 'nombre_ruta' && (!/^[a-zA-Z0-9\s]{1,15}$/.test(value))) {
-      setErrores(prev => ({ ...prev, nombre_ruta: 'Máximo 15 caracteres alfanuméricos.' }));
-    } else if (name === 'capacidad') {
+    if (name === 'capacidad') {
       const max = formData.tipo_servicio === '2' ? 100 : 34;
       if (parseInt(value) > max) {
         setErrores(prev => ({ ...prev, capacidad: `Capacidad máxima para este tipo: ${max}` }));
@@ -35,10 +47,10 @@ const ModalEditarRuta = ({ show, handleClose, ruta, onRutaActualizada }) => {
     e.preventDefault();
     try {
       const datosEditados = {
-        nombre_ruta: formData.nombre_ruta,
         tipo_servicio: formData.tipo_servicio,
         capacidad: formData.capacidad,
-        chofer_id: formData.chofer_id
+        chofer_id: formData.chofer_id,
+        nombre_ruta: formData.nombre_ruta
       };
 
       const res = await axios.put(`http://localhost:8000/api/rutas/${formData.id}`, datosEditados);
@@ -59,17 +71,38 @@ const ModalEditarRuta = ({ show, handleClose, ruta, onRutaActualizada }) => {
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
           <Form.Group>
+            <Form.Label>Ciudad</Form.Label>
+            <Form.Control
+              type="text"
+              value={formData.ciudad?.nombre || ''}
+              disabled
+            />
+          </Form.Group>
+
+          <Form.Group className="mt-2">
             <Form.Label>Nombre de la ruta</Form.Label>
             <Form.Control
               type="text"
-              name="nombre_ruta"
-              value={formData.nombre_ruta || ''}
-              onChange={handleChange}
-              maxLength={15}
-              required
-              isInvalid={!!errores.nombre_ruta}
+              value={ruta?.nombre_ruta || ''}
+              disabled
             />
-            <Form.Control.Feedback type="invalid">{errores.nombre_ruta}</Form.Control.Feedback>
+          </Form.Group>
+
+          <Form.Group className="mt-2">
+            <Form.Label>Chofer</Form.Label>
+            <Form.Select
+              name="chofer_id"
+              value={formData.chofer_id || ''}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Seleccione un chofer</option>
+              {choferes.map(chofer => (
+                <option key={chofer.id} value={chofer.id}>
+                  {chofer.nombre} {chofer.apellido_paterno}
+                </option>
+              ))}
+            </Form.Select>
           </Form.Group>
 
           <Form.Group className="mt-2">
