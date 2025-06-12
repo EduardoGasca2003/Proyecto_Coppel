@@ -5,7 +5,7 @@ import { Form } from 'react-bootstrap';
 import ModalCrearRuta from './ModalCrearRuta';
 import ModalEditarRuta from './ModalEditarRuta';
 import ModalConfirmarEliminar from './ModalConfirmarEliminar';
-
+import './Disenos.css'
 
 const Rutas = () => {
 
@@ -107,7 +107,7 @@ const Rutas = () => {
     }
   };
 
-  // Configuracion de Paginación
+  // Configuracion de paginaciónn
     const rutasPaginadas = rutasFiltrados.slice(
       (paginaActual - 1) * rutasPorPagina,
       paginaActual * rutasPorPagina
@@ -124,8 +124,7 @@ const Rutas = () => {
   if (ciudades.length === 0) {
     return (
       <div className="container mt-4">
-        <h4>No hay ciudades registradas. De clic en el boton para crear una nueva ciudad.</h4>
-        <Button variant="primary">+ Nueva Ciudad</Button>
+        <h4>No hay ciudades registradas. De clic en el boton "Ciudades" para crear una nueva ciudad.</h4>
       </div>
     );
   }
@@ -136,23 +135,26 @@ const Rutas = () => {
         <h3>Listado de Rutas</h3>
         <Button variant="success" onClick={abrirModal}>+ Nueva Ruta</Button>
       </div>
-
-      <Form.Select value={ciudadSeleccionada} onChange={e => setCiudadSeleccionada(e.target.value)}>
-            <option value="">Todas las ciudades</option>
-            {ciudades.map(ciudad => (
-                <option key={ciudad.id} value={ciudad.id}>{ciudad.nombre}</option>
-            ))}
-        </Form.Select>
-
-        <Form.Control
-            type="text"
-            placeholder="Buscar por ruta"
-            value={filtroRuta}
-            onChange={e => setFiltroRuta(e.target.value)}
-            className="mt-2"
-        />
-
-      <Table striped bordered hover>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+            <div style={{ height: '38px', display: 'flex', alignItems: 'center' }}>
+              <Form.Select value={ciudadSeleccionada} onChange={e => setCiudadSeleccionada(e.target.value)}>
+                  <option value="">Todas las ciudades</option>
+                  {ciudades.map(ciudad => (
+                      <option key={ciudad.id} value={ciudad.id}>{ciudad.nombre}</option>
+                  ))}
+              </Form.Select>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '7.5px' }}>
+              <Form.Control
+                  type="text"
+                  placeholder="Buscar por ruta"
+                  value={filtroRuta}
+                  onChange={e => setFiltroRuta(e.target.value)}
+                  className="mt-2"
+                />
+              </div>
+        </div>
+      <Table striped bordered hover className="table bordered-table">
         <thead>
           <tr>
             <th>ID</th>

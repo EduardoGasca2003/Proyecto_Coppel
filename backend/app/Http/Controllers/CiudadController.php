@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class CiudadController extends Controller
 {
-    // Obtener todas las ciudades
     public function index()
     {
         $ciudades = Ciudad::all();
@@ -20,7 +19,6 @@ class CiudadController extends Controller
         return response()->json($ciudades);
     }
 
-    // Crear una nueva ciudad
     public function store(Request $request)
     {
         $request->validate([
@@ -34,7 +32,6 @@ class CiudadController extends Controller
         return response()->json($ciudad, 201);
     }
 
-    // Eliminar una ciudad
     public function destroy($id)
     {
         $ciudad = Ciudad::find($id);
@@ -56,5 +53,15 @@ class CiudadController extends Controller
         $ciudad->delete();
 
         return response()->json(['mensaje' => 'Ciudad eliminada correctamente.']);
+    }
+    public function eliminarPorNombre($nombre)
+    {
+        $ciudad = Ciudad::where('nombre', $nombre)->first();
+        if (!$ciudad) {
+            return response()->json(['message' => 'Ciudad no encontrada'], 404);
+        }
+
+        $ciudad->delete();
+        return response()->json(['message' => 'Ciudad eliminada correctamente']);
     }
 }

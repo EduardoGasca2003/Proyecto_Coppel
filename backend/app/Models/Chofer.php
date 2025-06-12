@@ -21,13 +21,11 @@ class Chofer extends Model
 
     ];
 
-    // Un chofer pertenece a una ciudad
     public function ciudad()
     {
         return $this->belongsTo(Ciudad::class);
     }
 
-    // Un chofer puede tener una ruta asignada
     public function ruta()
     {
         return $this->belongsTo(Ruta::class);

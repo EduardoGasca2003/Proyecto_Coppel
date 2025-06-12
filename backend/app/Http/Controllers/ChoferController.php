@@ -19,7 +19,7 @@ class ChoferController extends Controller
 
         return response()->json($choferes);
     }
-    // Choferes activos por ciudad
+
     public function index($ciudad_id)
     {
         $choferes = Chofer::where('ciudad_id', $ciudad_id)
@@ -32,7 +32,7 @@ class ChoferController extends Controller
         return response()->json($choferes);
     }
 
-    // Registrar chofer
+
     public function store(Request $request)
     {
         $request->validate([
@@ -71,7 +71,6 @@ class ChoferController extends Controller
         ]);
     }
 
-    // DELETE: Eliminar chofer
     public function destroy($id)
     {
         $chofer = Chofer::findOrFail($id);

@@ -15,6 +15,7 @@ Route::get('/ciudades', [CiudadController::class, 'index']);
 Route::post('/ciudades', [CiudadController::class, 'store']);
 Route::put('/ciudades/{id}', [CiudadController::class, 'update']);
 Route::delete('/ciudades/{id}', [CiudadController::class, 'destroy']);
+Route::delete('/ciudades/eliminar/{nombre}', [CiudadController::class, 'eliminarPorNombre']);
 
 Route::get('/choferes', [ChoferController::class, 'todos']);
 Route::get('/choferes/ciudad/{ciudad_id}', [ChoferController::class, 'index']);

@@ -1,0 +1,15 @@
+
+.filtros-container {
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+  gap: 10px; /* espacio entre los filtros */
+}
+
+.filtros-container select,
+.filtros-container input {
+  height: 38px; 
+  margin-bottom: 0;    
+  padding: 6px 12px;    
+  box-sizing: border-box; /* para que padding no aumente el tamaño */
+}

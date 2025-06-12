@@ -17,12 +17,12 @@ const ModalCrearCiudad = ({ show, handleClose, onCiudadCreada }) => {
 
     try {
       setEnviando(true);
-      const response = await axios.post('/api/ciudades', { nombre });
+      const response = await axios.post('http://localhost:8000/api/ciudades', { nombre });
       setEnviando(false);
       setNombre('');
       setError('');
       handleClose();
-
+      window.location.reload();
       if (onCiudadCreada) onCiudadCreada(response.data); // opcional para recargar ciudades
     } catch (err) {
       setEnviando(false);
@@ -46,7 +46,7 @@ const ModalCrearCiudad = ({ show, handleClose, onCiudadCreada }) => {
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               maxLength={50}
-              placeholder="Ej. Guadalajara"
+              placeholder="Ej. Culiacán"
               autoFocus
             />
           </Form.Group>

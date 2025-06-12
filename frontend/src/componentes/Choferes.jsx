@@ -156,43 +156,44 @@ const Choferes = () => {
     if (ciudades.length === 0) {
       return (
         <div className="container mt-4">
-          <h4>No hay ciudades registradas. De clic en el boton para crear una nueva ciudad.</h4>
-          <Button variant="primary" onClick={abrirModalCiudad}>+ Nueva Ciudad</Button>
+          <h4>No hay ciudades registradas. De clic en el boton "Ciudades" para crear una nueva ciudad.</h4>
         </div>
       );
     }
   return (
-
-
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3>Listado de Choferes</h3>
         <Button variant="success" onClick={abrirModal}>+ Nuevo Chofer</Button>
       </div>
-    
-        <Form.Select value={ciudadSeleccionada} onChange={e => setCiudadSeleccionada(e.target.value)}>
-            <option value="">Todas las ciudades</option>
-            {ciudades.map(ciudad => (
-                <option key={ciudad.id} value={ciudad.id}>{ciudad.nombre}</option>
-            ))}
-        </Form.Select>
-
-        <Form.Control
-            type="text"
-            placeholder="Buscar por nombre"
-            value={filtroNombre}
-            onChange={e => setFiltroNombre(e.target.value)}
-            className="mt-2"
-        />
-
-        <Form.Control
-            type="text"
-            placeholder="Buscar por ruta"
-            value={filtroRuta}
-            onChange={e => setFiltroRuta(e.target.value)}
-            className="mt-2"
-        />
-
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+          <div style={{ height: '38px', display: 'flex', alignItems: 'center' }}>
+              <Form.Select value={ciudadSeleccionada} onChange={e => setCiudadSeleccionada(e.target.value)}>
+                  <option value="">Todas las ciudades</option>
+                  {ciudades.map(ciudad => (
+                      <option key={ciudad.id} value={ciudad.id}>{ciudad.nombre}</option>
+                  ))}
+              </Form.Select>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '7.5px' }}>     
+              <Form.Control
+                  type="text"
+                  placeholder="Buscar por nombre"
+                  value={filtroNombre}
+                  onChange={e => setFiltroNombre(e.target.value)}
+                  className="mt-2"
+              />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '7.5px' }}>
+              <Form.Control
+                  type="text"
+                  placeholder="Buscar por ruta"
+                  value={filtroRuta}
+                  onChange={e => setFiltroRuta(e.target.value)}
+                  className="mt-2"
+              />
+            </div>
+        </div>
 
       <Table striped bordered hover>
         <thead>
