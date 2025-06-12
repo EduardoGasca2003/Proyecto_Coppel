@@ -1,7 +1,7 @@
+import Choferes from "../componentes/Choferes";
 
 function ChoferesPage() {
-
-  return <h2>Sección de Choferes</h2>;
+  return <Choferes />;
 }
 
 export default ChoferesPage;
