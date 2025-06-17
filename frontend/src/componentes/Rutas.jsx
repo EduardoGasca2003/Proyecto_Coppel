@@ -17,7 +17,7 @@ const Rutas = () => {
     // Filtrar choferes según la ciudad, nombre y ruta
     const rutasFiltrados = rutas.filter((c) => {
         const coincideCiudad = ciudadSeleccionada === '' || c.ciudad_id === parseInt(ciudadSeleccionada);
-        const coincideRuta = (c.ruta ?? '').toLowerCase().includes(filtroRuta.toLowerCase());
+        const coincideRuta = (c.nombre_ruta ?? '').toLowerCase().includes(filtroRuta.toLowerCase());
         return coincideCiudad && coincideRuta;
     });
 
